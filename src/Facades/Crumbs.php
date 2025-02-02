@@ -2,6 +2,7 @@
 
 namespace Honed\Crumb\Facades;
 
+use Honed\Crumb\Manager;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -9,8 +10,10 @@ use Illuminate\Support\Facades\Facade;
  */
 class Crumbs extends Facade
 {
+    const ShareProp = Manager::ShareProp;
+    
     protected static function getFacadeAccessor(): string
     {
-        return \Honed\Crumb\Manager::class;
+        return Manager::class;
     }
 }

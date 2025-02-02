@@ -38,7 +38,7 @@ class Trail extends Primitive
      */
     public static function make(Crumb ...$crumbs): self
     {
-        return new self(...$crumbs);
+        return resolve(self::class, ['crumbs' => $crumbs]);
     }
 
     /**
@@ -52,7 +52,7 @@ class Trail extends Primitive
     }
 
     /**
-     * Set the trail to lock when a crumb in the trail is found.
+     * Set the trail to lock when a crumb in the trail matches.
      */
     public function terminating(bool $terminating = true): static
     {
@@ -108,8 +108,6 @@ class Trail extends Primitive
 
     /**
      * Determine if the trail is terminating.
-     *
-     * @internal
      */
     public function isTerminating(): bool
     {
@@ -117,9 +115,7 @@ class Trail extends Primitive
     }
 
     /**
-     * Determine if the trail is terminated.
-     *
-     * @internal
+     * Determine if the trail has terminated.
      */
     public function isTerminated(): bool
     {

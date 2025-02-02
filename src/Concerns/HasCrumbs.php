@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Honed\Crumb\Concerns;
 
 use Honed\Crumb\Attributes\Crumb;
@@ -8,6 +10,9 @@ use Honed\Crumb\Facades\Crumbs as Crumbs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * @mixin \Illuminate\Routing\Controller
+ */
 trait HasCrumbs
 {
     final public function __construct()

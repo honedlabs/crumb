@@ -9,17 +9,14 @@ use Honed\Crumb\Exceptions\DuplicateCrumbsException;
 
 class Manager
 {
+    const ShareProp = 'crumbs';
+
     /**
-     * Trails paired to a key.
-     *
      * @var array<string,(\Closure(\Honed\Crumb\Trail):void)>
      */
     protected $trails = [];
 
     /**
-     * Crumbs to be added before the trail.
-     * Useful for adding a home crumb to all trails.
-     *
      * @var (\Closure(\Honed\Crumb\Trail):void)|null
      */
     protected $before = null;
@@ -49,7 +46,7 @@ class Manager
     }
 
     /**
-     * Determine if a crumb with the given name exists.
+     * Determine if the crumb trail is defined.
      */
     public function exists(string $name): bool
     {
@@ -58,7 +55,6 @@ class Manager
 
     /**
      * Retrieve a crumb trail by name.
-     *
      *
      * @throws \Honed\Crumb\Exceptions\CrumbsNotFoundException
      */
