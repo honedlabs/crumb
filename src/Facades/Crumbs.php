@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Facade;
 class Crumbs extends Facade
 {
     const ShareProp = Manager::ShareProp;
-
+    
     protected static function getFacadeAccessor(): string
     {
         return Manager::class;
