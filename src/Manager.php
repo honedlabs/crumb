@@ -71,7 +71,6 @@ class Manager
         return $trail;
     }
 
-    
     /**
      * Throw an exception for a missing crumb trail.
      */
