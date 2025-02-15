@@ -12,19 +12,17 @@ class Manager
     const ShareProp = 'crumbs';
 
     /**
-     * @var array<string,(\Closure(\Honed\Crumb\Trail):void)>
+     * @var array<string,\Closure>
      */
     protected $trails = [];
 
     /**
-     * @var (\Closure(\Honed\Crumb\Trail):void)|null
+     * @var \Closure|null
      */
     protected $before = null;
 
     /**
      * Set crumbs to be added globally, before all other crumbs.
-     *
-     * @param  (\Closure(\Honed\Crumb\Trail $trail):void)  $trail
      */
     public function before(\Closure $trail): void
     {
@@ -33,8 +31,6 @@ class Manager
 
     /**
      * Set a crumb trail for a given name.
-     *
-     * @param  (\Closure(\Honed\Crumb\Trail $trail):void)  $trail
      */
     public function for(string $name, \Closure $trail): void
     {
@@ -61,7 +57,7 @@ class Manager
     public function get(string $name): Trail
     {
         if (! $this->exists($name)) {
-            throw new CrumbsNotFoundException($name);
+            static::throwCrumbNotFoundException($name);
         }
 
         $trail = Trail::make()->terminating();
@@ -73,5 +69,14 @@ class Manager
         ($this->trails[$name])($trail);
 
         return $trail;
+    }
+
+    
+    /**
+     * Throw an exception for a missing crumb trail.
+     */
+    protected static function throwCrumbNotFoundException(string $crumb): never
+    {
+        throw new CrumbsNotFoundException($crumb);
     }
 }

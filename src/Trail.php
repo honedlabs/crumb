@@ -38,7 +38,7 @@ class Trail extends Primitive
      */
     public static function make(Crumb ...$crumbs): self
     {
-        return resolve(self::class, ['crumbs' => $crumbs]);
+        return resolve(static::class, ['crumbs' => $crumbs]);
     }
 
     /**
@@ -137,15 +137,7 @@ class Trail extends Primitive
      */
     public function hasCrumbs(): bool
     {
-        return \count($this->crumbs()) > 0;
-    }
-
-    /**
-     * Determine if the crumb trail is missing crumbs.
-     */
-    public function missingCrumbs(): bool
-    {
-        return ! $this->hasCrumbs();
+        return filled($this->crumbs());
     }
 
     /**

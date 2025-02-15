@@ -190,7 +190,7 @@ class Crumb extends Primitive
      *
      * @internal
      */
-    private function isUrl(string $link): bool
+    protected function isUrl(string $link): bool
     {
         return str($link)->startsWith(['http', 'https', '/', '#', 'www.']);
     }
@@ -200,7 +200,7 @@ class Crumb extends Primitive
      *
      * @return non-empty-array<int,array<string,mixed>>
      */
-    private function getClosureParameters(): array
+    protected function getClosureParameters(): array
     {
         return $this->parameters ??= $this->makeClosureParameters();
     }
@@ -210,7 +210,7 @@ class Crumb extends Primitive
      *
      * @return non-empty-array<int,array<string,mixed>>
      */
-    private function makeClosureParameters(): array
+    protected function makeClosureParameters(): array
     {
         $parameters = Route::current()?->parameters() ?? [];
         $request = Request::capture();

@@ -8,6 +8,9 @@ class CrumbsNotFoundException extends \Exception
 {
     public function __construct(string $name)
     {
-        parent::__construct("There were no defined crumbs found for [$name]");
+        parent::__construct(
+            \sprintf('There were no defined crumbs found for [%s]', 
+            $name)
+        );
     }
 }

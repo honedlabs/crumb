@@ -26,8 +26,10 @@ class TestCase extends Orchestra
 
         View::addLocation(__DIR__.'/Stubs');
         Inertia::setRootView('app');
+
         config()->set('inertia.testing.ensure_pages_exist', false);
         config()->set('inertia.testing.page_paths', [realpath(__DIR__)]);
+        // config()->set('crumb.files', realpath(__DIR__).'../config/crumbs.php');
     }
 
     protected function getPackageProviders($app)
@@ -54,7 +56,7 @@ class TestCase extends Orchestra
 
     protected function defineRoutes($router)
     {
-        $router->middleware([HandlesInertiaRequests::class, SubstituteBindings::class])->group(function ($router) {
+        $router->middleware(HandlesInertiaRequests::class, SubstituteBindings::class)->group(function ($router) {
             $router->get('/', fn () => inertia('Home'));
 
             $router->get('/products', [ProductController::class, 'index'])->name('product.index');
