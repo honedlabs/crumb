@@ -6,75 +6,53 @@ namespace Honed\Crumb;
 
 use Honed\Core\Primitive;
 use Honed\Crumb\Exceptions\NonTerminatingCrumbException;
+use Honed\Crumb\Support\Parameters;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
+/**
+ * @extends \Honed\Core\Primitive<string, mixed>
+ */
 class Trail extends Primitive
 {
-    /**
-     * @var array<int,\Honed\Crumb\Crumb>
-     */
-    protected $crumbs;
-
-    /**
-     * @var bool
-     */
-    protected $terminating = false;
-
-    /**
-     * @var bool
-     */
-    protected $terminated = false;
-
-    /**
-     * Create a new trail instance.
-     */
-    public function __construct(Crumb ...$crumbs)
-    {
-        $this->crumbs = \array_values($crumbs);
-    }
+    use Concerns\IsTerminable;
+    use Concerns\HasCrumbs;
 
     /**
      * Make a new trail instance.
+     * 
+     * @param  array<int,\Honed\Crumb\Crumb>  $crumbs
      */
-    public static function make(Crumb ...$crumbs): self
+    public static function make(...$crumbs): static
     {
-        return resolve(static::class, ['crumbs' => $crumbs]);
+        return resolve(static::class)
+            ->crumbs($crumbs);
     }
 
     /**
      * Get the trail as an array.
-     *
-     * @return array<int,\Honed\Crumb\Crumb>
      */
     public function toArray(): array
     {
-        return $this->crumbs();
-    }
-
-    /**
-     * Set the trail to lock when a crumb in the trail matches.
-     */
-    public function terminating(bool $terminating = true): static
-    {
-        $this->terminating = $terminating;
-
-        return $this;
+        return $this->crumbsToArray();
     }
 
     /**
      * Append crumbs to the end of the crumb trail.
      *
-     * @param  string|\Honed\Crumb\Crumb|(\Closure(mixed...):string)  $crumb
-     * @param  string|(\Closure(mixed...):string)|null  $link
      * @return $this
      */
-    public function add(string|\Closure|Crumb $crumb, string|\Closure|null $link = null, ?string $icon = null): static
+    public function add(string|\Closure|Crumb $crumb, string|\Closure|null $link = null, mixed $parameters = []): static
     {
-        if (! $this->isTerminated()) {
-            $crumb = $crumb instanceof Crumb ? $crumb : Crumb::make($crumb, $link, $icon);
-            $this->crumbs[] = $crumb;
-            $this->terminated = $this->isTerminating() && $crumb->isCurrent();
+        if ($this->hasTerminated()) {
+            return $this;
         }
+
+        $crumb = $crumb instanceof Crumb ? $crumb : Crumb::make($crumb, $link, $parameters);
+        
+        $this->addCrumb($crumb);
+        
+        $this->terminate($this->isTerminating() && $crumb->isCurrent());
 
         return $this;
     }
@@ -88,7 +66,7 @@ class Trail extends Primitive
      */
     public function select(Crumb ...$crumbs): static
     {
-        if ($this->isTerminated()) {
+        if ($this->hasTerminated()) {
             return $this;
         }
 
@@ -96,7 +74,7 @@ class Trail extends Primitive
             throw new NonTerminatingCrumbException;
         }
 
-        $crumb = collect($crumbs)->first(fn (Crumb $crumb): bool => $crumb->isCurrent());
+        $crumb = Arr::first($crumbs, fn (Crumb $crumb): bool => $crumb->isCurrent());
 
         if ($crumb) {
             $this->crumbs[] = $crumb;
@@ -107,47 +85,13 @@ class Trail extends Primitive
     }
 
     /**
-     * Determine if the trail is terminating.
-     */
-    public function isTerminating(): bool
-    {
-        return $this->terminating;
-    }
-
-    /**
-     * Determine if the trail has terminated.
-     */
-    public function isTerminated(): bool
-    {
-        return $this->terminated;
-    }
-
-    /**
-     * Retrieve the crumbs in the crumb trail.
-     *
-     * @return array<int,\Honed\Crumb\Crumb>
-     */
-    public function crumbs(): array
-    {
-        return $this->crumbs;
-    }
-
-    /**
-     * Determine if the crumb trail has crumbs.
-     */
-    public function hasCrumbs(): bool
-    {
-        return filled($this->crumbs());
-    }
-
-    /**
      * Share the crumbs with Inertia.
      *
      * @return $this
      */
     public function share(): static
     {
-        Inertia::share('crumbs', $this->crumbs());
+        Inertia::share(Parameters::Prop, $this->getCrumbs());
 
         return $this;
     }

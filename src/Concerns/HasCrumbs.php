@@ -4,63 +4,79 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Concerns;
 
-use Honed\Crumb\Attributes\Crumb;
-use Honed\Crumb\Exceptions\ClassDoesNotExtendControllerException;
-use Honed\Crumb\Facades\Crumbs as Crumbs;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Honed\Crumb\Crumb;
+use Illuminate\Contracts\Support\Arrayable;
 
-/**
- * @mixin \Illuminate\Routing\Controller
- */
 trait HasCrumbs
 {
-    final public function __construct()
-    {
-        $this->configureCrumbs();
-    }
+    /**
+     * List of the crumbs.
+     * 
+     * @var array<string,\Honed\Crumb\Trail>
+     */
+    protected $crumbs = [];
 
     /**
-     * Share the crumbs relevant to the current request to your Inertia view.
-     *
-     * @throws ClassDoesNotExtendControllerException
+     * Merge a set of crumbs with existing.
+     * 
+     * @param  iterable<\Honed\Crumb\Trail>  $crumbs
+     * 
+     * @return $this
      */
-    public function configureCrumbs(): void
+    public function crumbs(iterable $crumbs): static
     {
-        if (! \in_array('Illuminate\Routing\Controller', \class_parents($this))) {
-            throw new ClassDoesNotExtendControllerException(\class_basename($this));
+        if ($crumbs instanceof Arrayable) {
+            $crumbs = $crumbs->toArray();
         }
 
-        $this->middleware(function (Request $request, \Closure $next) {
-            $name = $this->getCrumbName();
+        /** 
+         * @var array<int, \Honed\Crumb\Crumb> $crumbs 
+         */
+        $this->crumbs = \array_merge($this->crumbs ?? [], $crumbs);
 
-            // If no, don't share breadcrumbs and don't error.
-            if ($name) {
-                Crumbs::get($name)->share();
-            }
-
-            return $next($request);
-        });
+        return $this;
     }
 
     /**
-     * Retrieve the crumb name to use from the method call, or class instance.
+     * Add a single crumb to the list of crumbs.
+     * 
+     * @return $this
      */
-    public function getCrumbName(): ?string
+    public function addCrumb(Crumb $crumb): static
     {
-        return match (true) {
-            (bool) ($c = collect((new \ReflectionMethod($this, Route::getCurrentRoute()->getActionMethod()))
-                ->getAttributes(Crumb::class)
-            )->first()?->newInstance()->getCrumb()) => $c,
+        $this->crumbs[] = $crumb;
 
-            (bool) ($c = collect((new \ReflectionClass($this))
-                ->getAttributes(Crumb::class)
-            )->first()?->newInstance()->getCrumb()) => $c,
+        return $this;
+    }
 
-            \property_exists($this, 'crumb') => $this->crumb,
+    /**
+     * Retrieve the crumbs
+     * 
+     * @return array<string,\Honed\Crumb\Trail>
+     */
+    public function getCrumbs(): array
+    {
+        return $this->crumbs;
+    }
 
-            \method_exists($this, 'crumb') => $this->crumb,
-            default => null,
-        };
+    /**
+     * Determine if the instance has crumbs.
+     */
+    public function hasCrumbs(): bool
+    {
+        return filled($this->getCrumbs());
+    }
+
+    /**
+     * Get the crumbs as an array.
+     * 
+     * @return array<int,mixed>
+     */
+    public function crumbsToArray(): array
+    {
+        return \array_map(
+            static fn (Crumb $crumb) => $crumb->toArray(), 
+            $this->getCrumbs()
+        );
     }
 }

@@ -57,11 +57,11 @@ class TestCase extends Orchestra
     protected function defineRoutes($router)
     {
         $router->middleware(HandlesInertiaRequests::class, SubstituteBindings::class)->group(function ($router) {
-            $router->get('/', fn () => inertia('Home'));
+            $router->get('/', fn () => inertia('Home'))->name('home');
 
-            $router->get('/products', [ProductController::class, 'index'])->name('product.index');
-            $router->get('/products/{product:public_id}', [ProductController::class, 'show'])->name('product.show');
-            $router->get('/products/{product}/edit', [ProductController::class, 'edit'])->name('product.edit');
+            $router->get('/products', [ProductController::class, 'index'])->name('products.index');
+            $router->get('/products/{product:public_id}', [ProductController::class, 'show'])->name('products.show');
+            $router->get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
 
             $router->get('/status/{status}', [MethodController::class, 'show'])->name('status.show');
             $router->get('/testing/{word}', [PropertyController::class, 'show'])->name('word.show');

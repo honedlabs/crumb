@@ -6,11 +6,10 @@ namespace Honed\Crumb;
 
 use Honed\Crumb\Exceptions\CrumbsNotFoundException;
 use Honed\Crumb\Exceptions\DuplicateCrumbsException;
+use Illuminate\Support\Arr;
 
 class Manager
 {
-    const ShareProp = 'crumbs';
-
     /**
      * @var array<string,\Closure>
      */
@@ -22,31 +21,35 @@ class Manager
     protected $before = null;
 
     /**
-     * Set crumbs to be added globally, before all other crumbs.
+     * Set a crumb to be added globally, before all other crumbs.
      */
-    public function before(\Closure $trail): void
+    public function before(\Closure $trail): static
     {
         $this->before = $trail;
+
+        return $this;
     }
 
     /**
      * Set a crumb trail for a given name.
      */
-    public function for(string $name, \Closure $trail): void
+    public function for(string $name, \Closure $trail): static
     {
-        if ($this->exists($name)) {
+        if ($this->hasTrail($name)) {
             throw new DuplicateCrumbsException($name);
         }
 
-        $this->trails[$name] = $trail;
+        Arr::set($this->trails, $name, $trail);
+
+        return $this;
     }
 
     /**
-     * Determine if the crumb trail is defined.
+     * Determine if the tail exists.
      */
-    public function exists(string $name): bool
+    public function hasTrail(string $name): bool
     {
-        return isset($this->trails[$name]);
+        return Arr::has($this->trails, $name);
     }
 
     /**
@@ -56,17 +59,17 @@ class Manager
      */
     public function get(string $name): Trail
     {
-        if (! $this->exists($name)) {
+        if (! $this->hasTrail($name)) {
             static::throwCrumbNotFoundException($name);
         }
 
         $trail = Trail::make()->terminating();
 
         if ($this->before) {
-            ($this->before)($trail);
+            \call_user_func($this->before, $trail);
         }
 
-        ($this->trails[$name])($trail);
+        \call_user_func(Arr::get($this->trails, $name), $trail);
 
         return $trail;
     }
