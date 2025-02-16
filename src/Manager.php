@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
-use Honed\Crumb\Exceptions\CrumbsNotFoundException;
-use Honed\Crumb\Exceptions\DuplicateCrumbsException;
 use Illuminate\Support\Arr;
 
 class Manager
@@ -22,6 +20,8 @@ class Manager
 
     /**
      * Set a crumb to be added globally, before all other crumbs.
+     *
+     * @return $this
      */
     public function before(\Closure $trail): static
     {
@@ -32,11 +32,15 @@ class Manager
 
     /**
      * Set a crumb trail for a given name.
+     *
+     * @return $this
+     *
+     * @throws \InvalidArgumentException
      */
     public function for(string $name, \Closure $trail): static
     {
         if ($this->hasTrail($name)) {
-            throw new DuplicateCrumbsException($name);
+            static::throwDuplicateCrumbsException($name);
         }
 
         Arr::set($this->trails, $name, $trail);
@@ -55,7 +59,7 @@ class Manager
     /**
      * Retrieve a crumb trail by name.
      *
-     * @throws \Honed\Crumb\Exceptions\CrumbsNotFoundException
+     * @throws \InvalidArgumentException
      */
     public function get(string $name): Trail
     {
@@ -69,7 +73,10 @@ class Manager
             \call_user_func($this->before, $trail);
         }
 
-        \call_user_func(Arr::get($this->trails, $name), $trail);
+        /** @var \Closure */
+        $callback = Arr::get($this->trails, $name);
+
+        \call_user_func($callback, $trail);
 
         return $trail;
     }
@@ -79,6 +86,20 @@ class Manager
      */
     protected static function throwCrumbNotFoundException(string $crumb): never
     {
-        throw new CrumbsNotFoundException($crumb);
+        throw new \InvalidArgumentException(
+            \sprintf('There were no crumbs defined for [%s].',
+                $crumb
+            ));
+    }
+
+    /**
+     * Throw an exception for a duplicate crumb trail.
+     */
+    protected static function throwDuplicateCrumbsException(string $crumb): never
+    {
+        throw new \InvalidArgumentException(
+            \sprintf('There already exists a crumb with the name [%s].',
+                $crumb
+            ));
     }
 }

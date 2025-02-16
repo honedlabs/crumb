@@ -12,7 +12,7 @@ trait HasCrumbs
     /**
      * List of the crumbs.
      *
-     * @var array<string,\Honed\Crumb\Trail>
+     * @var array<int,\Honed\Crumb\Crumb>
      */
     protected $crumbs = [];
 
@@ -31,7 +31,7 @@ trait HasCrumbs
         /**
          * @var array<int, \Honed\Crumb\Crumb> $crumbs
          */
-        $this->crumbs = \array_merge($this->crumbs ?? [], $crumbs);
+        $this->crumbs = \array_merge($this->crumbs, $crumbs);
 
         return $this;
     }
@@ -51,7 +51,7 @@ trait HasCrumbs
     /**
      * Retrieve the crumbs
      *
-     * @return array<string,\Honed\Crumb\Trail>
+     * @return array<int,\Honed\Crumb\Crumb>
      */
     public function getCrumbs(): array
     {

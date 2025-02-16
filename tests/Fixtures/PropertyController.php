@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Honed\Crumb\Tests\Stubs;
+namespace Honed\Crumb\Tests\Fixtures;
 
 use Honed\Crumb\Concerns\HasCrumbs;
-use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class PropertyController extends Controller
 {
@@ -13,7 +13,7 @@ class PropertyController extends Controller
 
     public $crumb = 'basic';
 
-    public function show(Request $request, string $word)
+    public function show(string $word)
     {
         return inertia('Word/Show', ['word' => $word]);
     }

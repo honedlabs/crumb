@@ -8,6 +8,7 @@ use Honed\Core\Concerns\HasIcon;
 use Honed\Core\Concerns\HasName;
 use Honed\Core\Concerns\HasRequest;
 use Honed\Core\Concerns\HasRoute;
+use Honed\Core\Contracts\Resolves;
 use Honed\Core\Primitive;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
@@ -16,7 +17,7 @@ use Illuminate\Support\Arr;
 /**
  * @extends \Honed\Core\Primitive<string, mixed>
  */
-class Crumb extends Primitive
+class Crumb extends Primitive implements Resolves
 {
     use HasIcon;
     use HasName;
@@ -87,6 +88,7 @@ class Crumb extends Primitive
             static fn ($value, $key) => [$key => [$value]]
         );
 
+        /** @var array<int, mixed> */
         return match ($parameterName) {
             'request' => [$request],
             'route' => [$request->route()],
@@ -106,6 +108,7 @@ class Crumb extends Primitive
             $this->getTypedParameters(...)
         );
 
+        /** @var array<int, mixed> */
         return match ($parameterType) {
             Request::class => [$request],
             Route::class => [$request->route()],

@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Honed\Crumb\Tests\Stubs;
+namespace Honed\Crumb\Tests\Fixtures;
 
 use Honed\Crumb\Concerns\HasCrumbs;
-use Illuminate\Http\Request;
+use Honed\Crumb\Tests\Stubs\Status;
+use Illuminate\Routing\Controller;
 
 class MethodController extends Controller
 {
     use HasCrumbs;
 
-    public function show(Request $request, Status $status)
+    public function show(Status $status)
     {
         return inertia('Status/Show', ['status' => $status]);
     }
