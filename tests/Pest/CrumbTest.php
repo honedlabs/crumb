@@ -30,7 +30,7 @@ it('can resolve route model binding', function () {
     get(route('products.show', $p));
 
     $crumb = Crumb::make(
-        fn ($product) => $product->name, 
+        fn ($product) => $product->name,
         fn (Product $typed) => route('products.show', $typed)
     );
 
@@ -39,7 +39,7 @@ it('can resolve route model binding', function () {
             'name' => $p->name,
             'url' => route('products.show', $p),
             'icon' => null,
-        ]); 
+        ]);
 });
 
 it('can resolve route enum binding when retrieving array form', function () {
@@ -73,8 +73,8 @@ it('can resolve other bindings', function () {
 });
 
 it('checks if a crumb is current', function () {
-    // Basic
-    get(route('home'));
+// Basic
+get(route('home'));
 
     $crumb = Crumb::make('Home', 'home');
     expect($crumb->isCurrent())->toBeTrue();
@@ -91,5 +91,5 @@ it('checks if a crumb is current', function () {
     get(route('products.show', $b));
 
     $crumb = Crumb::make('View', 'products.show', $a);
-    expect($crumb->isCurrent())->toBeFalse();    
-});
+    expect($crumb->isCurrent())->toBeFalse();
+    });

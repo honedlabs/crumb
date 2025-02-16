@@ -11,16 +11,15 @@ trait HasCrumbs
 {
     /**
      * List of the crumbs.
-     * 
+     *
      * @var array<string,\Honed\Crumb\Trail>
      */
     protected $crumbs = [];
 
     /**
      * Merge a set of crumbs with existing.
-     * 
+     *
      * @param  iterable<\Honed\Crumb\Trail>  $crumbs
-     * 
      * @return $this
      */
     public function crumbs(iterable $crumbs): static
@@ -29,8 +28,8 @@ trait HasCrumbs
             $crumbs = $crumbs->toArray();
         }
 
-        /** 
-         * @var array<int, \Honed\Crumb\Crumb> $crumbs 
+        /**
+         * @var array<int, \Honed\Crumb\Crumb> $crumbs
          */
         $this->crumbs = \array_merge($this->crumbs ?? [], $crumbs);
 
@@ -39,7 +38,7 @@ trait HasCrumbs
 
     /**
      * Add a single crumb to the list of crumbs.
-     * 
+     *
      * @return $this
      */
     public function addCrumb(Crumb $crumb): static
@@ -51,7 +50,7 @@ trait HasCrumbs
 
     /**
      * Retrieve the crumbs
-     * 
+     *
      * @return array<string,\Honed\Crumb\Trail>
      */
     public function getCrumbs(): array
@@ -69,13 +68,13 @@ trait HasCrumbs
 
     /**
      * Get the crumbs as an array.
-     * 
+     *
      * @return array<int,mixed>
      */
     public function crumbsToArray(): array
     {
         return \array_map(
-            static fn (Crumb $crumb) => $crumb->toArray(), 
+            static fn (Crumb $crumb) => $crumb->toArray(),
             $this->getCrumbs()
         );
     }

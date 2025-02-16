@@ -15,12 +15,12 @@ use Inertia\Inertia;
  */
 class Trail extends Primitive
 {
-    use Concerns\IsTerminable;
     use Concerns\HasCrumbs;
+    use Concerns\IsTerminable;
 
     /**
      * Make a new trail instance.
-     * 
+     *
      * @param  array<int,\Honed\Crumb\Crumb>  $crumbs
      */
     public static function make(...$crumbs): static
@@ -49,9 +49,9 @@ class Trail extends Primitive
         }
 
         $crumb = $crumb instanceof Crumb ? $crumb : Crumb::make($crumb, $link, $parameters);
-        
+
         $this->addCrumb($crumb);
-        
+
         $this->terminate($this->isTerminating() && $crumb->isCurrent());
 
         return $this;
