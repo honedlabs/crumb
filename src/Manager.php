@@ -49,7 +49,7 @@ class Manager
     }
 
     /**
-     * Determine if the tail exists.
+     * Determine if the trail exists.
      */
     public function hasTrail(string $name): bool
     {

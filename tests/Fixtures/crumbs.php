@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Honed\Crumb\Crumb;
 use Honed\Crumb\Facades\Crumbs;
 use Honed\Crumb\Tests\Stubs\Product;

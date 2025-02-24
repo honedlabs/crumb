@@ -55,7 +55,7 @@ class CrumbServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the middleware.
+     * Register the middleware alias.
      */
     protected function registerMiddleware(): void
     {
