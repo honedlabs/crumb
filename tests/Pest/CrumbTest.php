@@ -73,8 +73,8 @@ it('can resolve other bindings', function () {
 });
 
 it('checks if a crumb is current', function () {
-// Basic
-get(route('home'));
+    // Basic
+    get(route('home'));
 
     $crumb = Crumb::make('Home', 'home');
     expect($crumb->isCurrent())->toBeTrue();
@@ -92,4 +92,4 @@ get(route('home'));
 
     $crumb = Crumb::make('View', 'products.show', $a);
     expect($crumb->isCurrent())->toBeFalse();
-    });
+});
