@@ -89,7 +89,7 @@ class Trail extends Primitive
      *
      * @return $this
      */
-    public function share(): static
+    public function share()
     {
         Inertia::share(Parameters::Prop, $this->toArray());
 
@@ -98,8 +98,10 @@ class Trail extends Primitive
 
     /**
      * Throw an exception if `select` is called on a non-terminating crumb.
+     * 
+     * @return never
      */
-    protected static function throwNonTerminatingCrumbException(): never
+    protected static function throwNonTerminatingCrumbException()
     {
         throw new \BadMethodCallException(
             'This method is only available on terminating crumbs.'

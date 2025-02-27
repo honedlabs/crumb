@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
+use Illuminate\Routing\Events\Routing;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-class CrumbServiceProvider extends ServiceProvider
+final class CrumbServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -26,15 +28,25 @@ class CrumbServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/crumb.php' => config_path('crumb.php'),
-        ], 'crumb-config');
+        ], 'config');
 
-        $this->bootCrumbs();
+        Event::listen(Routing::class, function () {
+            $this->registerCrumbs();
+        });
     }
 
     /**
-     * Bootstrap the crumbs.
+     * Register the middleware alias.
      */
-    protected function bootCrumbs(): void
+    protected function registerMiddleware(): void
+    {
+        Route::aliasMiddleware('crumb', Middleware\ShareCrumb::class);
+    }
+
+    /**
+     * Register the crumbs.
+     */
+    protected function registerCrumbs(): void
     {
         /**
          * @var string|array<int,string>
@@ -52,13 +64,5 @@ class CrumbServiceProvider extends ServiceProvider
         foreach ((array) $files as $file) {
             require $file;
         }
-    }
-
-    /**
-     * Register the middleware alias.
-     */
-    protected function registerMiddleware(): void
-    {
-        Route::aliasMiddleware('crumb', Middleware\ShareCrumb::class);
     }
 }
