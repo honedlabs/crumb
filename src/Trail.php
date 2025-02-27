@@ -98,7 +98,7 @@ class Trail extends Primitive
 
     /**
      * Throw an exception if `select` is called on a non-terminating crumb.
-     * 
+     *
      * @return never
      */
     protected static function throwNonTerminatingCrumbException()
