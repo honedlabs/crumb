@@ -10,4 +10,4 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: true
     ignoreErrors:
-        - '#Trait Honed\\Crumb\\Concerns\\Crumbs is used zero times#'
+        - '#Trait Honed\\Crumb\\Concerns\\HasCrumbs is used zero times#'

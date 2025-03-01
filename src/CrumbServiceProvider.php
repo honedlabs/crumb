@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
-use Illuminate\Routing\Events\Routing;
+use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -30,7 +30,7 @@ final class CrumbServiceProvider extends ServiceProvider
             __DIR__.'/../config/crumb.php' => config_path('crumb.php'),
         ], 'config');
 
-        Event::listen(Routing::class, function () {
+        Event::listen(RouteMatched::class, function () {
             $this->registerCrumbs();
         });
     }

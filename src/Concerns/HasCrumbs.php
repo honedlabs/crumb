@@ -4,78 +4,97 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Concerns;
 
-use Honed\Crumb\Crumb;
-use Illuminate\Contracts\Support\Arrayable;
+use Honed\Crumb\Attributes\Crumb;
+use Honed\Crumb\Exceptions\ClassDoesNotExtendControllerException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Route;
 
 trait HasCrumbs
 {
-    /**
-     * List of the crumbs.
-     *
-     * @var array<int,\Honed\Crumb\Crumb>
-     */
-    protected $crumbs = [];
+    public function __construct()
+    {
+        $this->configureCrumbs();
+    }
 
     /**
-     * Merge a set of crumbs with existing.
+     * Share the crumbs relevant to the current request to your Inertia view.
      *
-     * @param  iterable<\Honed\Crumb\Trail>  $crumbs
-     * @return $this
+     * @return void
+     *
+     * @throws ClassDoesNotExtendControllerException
      */
-    public function crumbs(iterable $crumbs): static
+    public function configureCrumbs()
     {
-        if ($crumbs instanceof Arrayable) {
-            $crumbs = $crumbs->toArray();
+        if (! \in_array('Illuminate\Routing\Controller', \class_parents($this))) {
+            static::throwControllerExtensionException(\class_basename($this));
         }
 
-        /**
-         * @var array<int, \Honed\Crumb\Crumb> $crumbs
-         */
-        $this->crumbs = \array_merge($this->crumbs, $crumbs);
+        $name = $this->getCrumbName();
 
-        return $this;
+        $this->middleware('crumb:'.$name);
     }
 
     /**
-     * Add a single crumb to the list of crumbs.
+     * Retrieve the crumb name to use from the method call, or class instance.
      *
-     * @return $this
+     * @return string|null
      */
-    public function addCrumb(Crumb $crumb): static
+    public function getCrumbName()
     {
-        $this->crumbs[] = $crumb;
-
-        return $this;
+        return match (true) {
+            (bool) ($name = $this->getMethodCrumbAttribute()) => $name,
+            (bool) ($name = $this->getClassCrumbAttribute()) => $name,
+            isset($this->crumb) => $this->crumb,
+            \method_exists($this, 'crumb') => $this->crumb(),
+            default => null,
+        };
     }
 
     /**
-     * Retrieve the crumbs
+     * Get the crumb attribute on the active method.
      *
-     * @return array<int,\Honed\Crumb\Crumb>
+     * @return string|null
      */
-    public function getCrumbs(): array
+    protected function getMethodCrumbAttribute()
     {
-        return $this->crumbs;
-    }
+        $action = Route::getCurrentRoute()?->getActionMethod();
 
-    /**
-     * Determine if the instance has crumbs.
-     */
-    public function hasCrumbs(): bool
-    {
-        return filled($this->getCrumbs());
-    }
-
-    /**
-     * Get the crumbs as an array.
-     *
-     * @return array<int,mixed>
-     */
-    public function crumbsToArray(): array
-    {
-        return \array_map(
-            static fn (Crumb $crumb) => $crumb->toArray(),
-            $this->getCrumbs()
+        if (! $action) {
+            return null;
+        }
+        /** @var \ReflectionAttribute<\Honed\Crumb\Attributes\Crumb>|null $attribute */
+        $attribute = Arr::first(
+            (new \ReflectionMethod($this, $action))->getAttributes(Crumb::class)
         );
+
+        return $attribute?->newInstance()->getCrumbName();
+    }
+
+    /**
+     * Get the crumb attribute on the class.
+     *
+     * @return string|null
+     */
+    protected function getClassCrumbAttribute()
+    {
+        $attribute = Arr::first(
+            (new \ReflectionClass($this))->getAttributes(Crumb::class)
+        );
+
+        return $attribute?->newInstance()->getCrumbName();
+    }
+
+    /**
+     * Throw an exception for when the using class is not a controller.
+     *
+     * @param  string  $class
+     * @return never
+     */
+    protected static function throwControllerExtensionException($class)
+    {
+        throw new \LogicException(\sprintf(
+            'Class [%s] does not extend the [Illuminate\Routing\Controller] controller class.',
+            $class
+        ));
     }
 }

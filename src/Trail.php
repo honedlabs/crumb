@@ -7,6 +7,7 @@ namespace Honed\Crumb;
 use Honed\Core\Primitive;
 use Honed\Crumb\Support\Parameters;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 
 /**
@@ -14,26 +15,80 @@ use Inertia\Inertia;
  */
 class Trail extends Primitive
 {
-    use Concerns\HasCrumbs;
-    use Concerns\IsTerminable;
+    /**
+     * List of the crumbs.
+     *
+     * @var array<int,\Honed\Crumb\Crumb>
+     */
+    protected $crumbs = [];
+
+    /**
+     * Whether the trail can terminate.
+     *
+     * @var bool
+     */
+    protected $terminating = false;
+
+    /**
+     * Whether the trail has terminated.
+     *
+     * @var bool
+     */
+    protected $terminated = false;
 
     /**
      * Make a new trail instance.
+     *
+     * @param  \Honed\Crumb\Crumb  $crumbs
+     * @return static
      */
-    public static function make(Crumb ...$crumbs): static
+    public static function make(...$crumbs)
     {
         return resolve(static::class)
             ->crumbs($crumbs);
     }
 
     /**
-     * Append crumbs to the end of the crumb trail.
+     * Set the trail to terminate when a crumb in the trail matches.
      *
+     * @param  bool  $terminating
      * @return $this
      */
-    public function add(string|\Closure|Crumb $crumb, string|\Closure|null $link = null, mixed $parameters = []): static
+    public function terminating($terminating = true)
     {
-        if ($this->hasTerminated()) {
+        $this->terminating = $terminating;
+
+        return $this;
+    }
+
+    /**
+     * Merge a set of crumbs with existing.
+     *
+     * @param  array<int,\Honed\Crumb\Crumb>|\Illuminate\Support\Collection<int,\Honed\Crumb\Crumb>  $crumbs
+     * @return $this
+     */
+    public function crumbs($crumbs)
+    {
+        if ($crumbs instanceof Collection) {
+            $crumbs = $crumbs->all();
+        }
+
+        $this->crumbs = \array_merge($this->crumbs, $crumbs);
+
+        return $this;
+    }
+
+    /**
+     * Append crumbs to the end of the crumb trail.
+     *
+     * @param  \Honed\Crumb\Crumb|\Closure|string  $crumb
+     * @param  \Closure|string|null  $link
+     * @param  mixed  $parameters
+     * @return $this
+     */
+    public function add($crumb, $link = null, $parameters = [])
+    {
+        if ($this->terminated) {
             return $this;
         }
 
@@ -41,7 +96,20 @@ class Trail extends Primitive
 
         $this->addCrumb($crumb);
 
-        $this->terminate($crumb->isCurrent());
+        $this->terminated = $crumb->isCurrent();
+
+        return $this;
+    }
+
+    /**
+     * Add a single crumb to the list of crumbs.
+     *
+     * @param  \Honed\Crumb\Crumb  $crumb
+     * @return $this
+     */
+    protected function addCrumb($crumb)
+    {
+        $this->crumbs[] = $crumb;
 
         return $this;
     }
@@ -49,17 +117,18 @@ class Trail extends Primitive
     /**
      * Select and add the first matching crumb to the trail.
      *
+     * @param  \Honed\Crumb\Crumb  ...$crumbs
      * @return $this
      *
      * @throws \BadMethodCallException
      */
-    public function select(Crumb ...$crumbs): static
+    public function select(...$crumbs)
     {
-        if ($this->hasTerminated()) {
+        if ($this->terminated) {
             return $this;
         }
 
-        if (! $this->isTerminating()) {
+        if (! $this->terminating) {
             static::throwNonTerminatingCrumbException();
         }
 
@@ -70,18 +139,41 @@ class Trail extends Primitive
 
         if ($crumb) {
             $this->addCrumb($crumb);
-            $this->terminate();
+            $this->terminated = true;
         }
 
         return $this;
     }
 
     /**
-     * Get the trail as an array.
+     * Retrieve the crumbs
+     *
+     * @return array<int,\Honed\Crumb\Crumb>
      */
-    public function toArray(): array
+    public function getCrumbs()
     {
-        return $this->crumbsToArray();
+        return $this->crumbs;
+    }
+
+    /**
+     * Determine if the instance has crumbs.
+     *
+     * @return bool
+     */
+    public function hasCrumbs()
+    {
+        return filled($this->getCrumbs());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        return \array_map(
+            static fn (Crumb $crumb) => $crumb->toArray(),
+            $this->getCrumbs()
+        );
     }
 
     /**

@@ -10,37 +10,48 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\get;
 
+beforeEach(function () {
+    $this->crumb = 'basic';
+});
+
 it('can be accessed via facade', function () {
     expect(Crumbs::getFacadeRoot())->toBeInstanceOf(Manager::class);
 });
 
 it('autoloads from `routes` file', function () {
-    expect(Crumbs::get('basic'))->toBeInstanceOf(Trail::class)
-        ->toArray()->toHaveCount(1);
+    get('/');
+    expect(Crumbs::get($this->crumb))
+        ->toBeInstanceOf(Trail::class)
+        ->toArray()
+        ->toHaveCount(1);
 });
 
 it('can set crumbs before all other crumbs', function () {
+    get('/');
+
     Crumbs::before(function (Trail $trail) {
         $trail->add(Crumb::make('Products')->url('/products'));
     });
 
-    expect(Crumbs::get('basic'))->toBeInstanceOf(Trail::class)
+    expect(Crumbs::get($this->crumb))
+        ->toBeInstanceOf(Trail::class)
         ->toArray()->toHaveCount(2);
 });
 
 it('throws error if the key does not exist', function () {
+    get('/');
     Crumbs::get('not-found');
 })->throws(\InvalidArgumentException::class);
 
 it('throws error if the key already exists', function () {
-    Crumbs::for('basic', function (Trail $trail) {
+    get('/');
+    Crumbs::for($this->crumb, function (Trail $trail) {
         $trail->add(Crumb::make('Home', '/'));
     });
 })->throws(\InvalidArgumentException::class);
 
 it('retrieves crumbs', function () {
     $product = product();
-
     $response = get(route('products.show', $product));
 
     $response->assertInertia(fn (Assert $page) => $page->has('crumbs')

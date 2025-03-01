@@ -21,9 +21,10 @@ class Manager
     /**
      * Set a crumb to be added globally, before all other crumbs.
      *
+     * @param  \Closure  $trail
      * @return $this
      */
-    public function before(\Closure $trail): static
+    public function before($trail)
     {
         $this->before = $trail;
 
@@ -33,11 +34,13 @@ class Manager
     /**
      * Set a crumb trail for a given name.
      *
+     * @param  string  $name
+     * @param  \Closure  $trail
      * @return $this
      *
      * @throws \InvalidArgumentException
      */
-    public function for(string $name, \Closure $trail): static
+    public function for($name, $trail)
     {
         if ($this->hasTrail($name)) {
             static::throwDuplicateCrumbsException($name);
@@ -50,18 +53,24 @@ class Manager
 
     /**
      * Determine if the trail exists.
+     *
+     * @param  string  $name
+     * @return bool
      */
-    public function hasTrail(string $name): bool
+    public function hasTrail($name)
     {
-        return Arr::has($this->trails, $name);
+        return \in_array($name, \array_keys($this->trails));
     }
 
     /**
      * Retrieve a crumb trail by name.
      *
+     * @param  string  $name
+     * @return \Honed\Crumb\Trail
+     *
      * @throws \InvalidArgumentException
      */
-    public function get(string $name): Trail
+    public function get($name)
     {
         if (! $this->hasTrail($name)) {
             static::throwCrumbNotFoundException($name);
@@ -83,23 +92,27 @@ class Manager
 
     /**
      * Throw an exception for a missing crumb trail.
+     *
+     * @param  string  $crumb
+     * @return never
      */
-    protected static function throwCrumbNotFoundException(string $crumb): never
+    protected static function throwCrumbNotFoundException($crumb)
     {
         throw new \InvalidArgumentException(
-            \sprintf('There were no crumbs defined for [%s].',
-                $crumb
-            ));
+            \sprintf('There were no crumbs defined for [%s].', $crumb)
+        );
     }
 
     /**
      * Throw an exception for a duplicate crumb trail.
+     *
+     * @param  string  $crumb
+     * @return never
      */
-    protected static function throwDuplicateCrumbsException(string $crumb): never
+    protected static function throwDuplicateCrumbsException($crumb)
     {
         throw new \InvalidArgumentException(
-            \sprintf('There already exists a crumb with the name [%s].',
-                $crumb
-            ));
+            \sprintf('There already exists a crumb with the name [%s].', $crumb)
+        );
     }
 }

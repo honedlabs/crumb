@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Honed\Crumb\Tests\Fixtures;
 
 use Honed\Crumb\Attributes\Crumb;
-use Honed\Crumb\Concerns\Crumbs;
+use Honed\Crumb\Concerns\HasCrumbs;
 use Honed\Crumb\Tests\Stubs\Product;
 use Illuminate\Routing\Controller;
 
 #[Crumb('products')]
 class ProductController extends Controller
 {
-    use Crumbs;
+    use HasCrumbs;
 
     public function index()
     {

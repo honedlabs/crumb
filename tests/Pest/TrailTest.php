@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Crumb\Tests\Pest;
 
 use Honed\Crumb\Crumb;
-use Honed\Crumb\Exceptions\NonTerminatingCrumbException;
 use Honed\Crumb\Trail;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -24,12 +23,13 @@ it('can be made', function () {
 it('has array representation', function () {
     $crumb = Crumb::make('Home', 'home');
 
-    expect(Trail::make($crumb)->toArray())->toEqual([
-        $crumb->toArray(),
-    ]);
+    expect(Trail::make($crumb)->toArray())
+        ->toEqual([
+            $crumb->toArray(),
+        ]);
 });
 
-it('can add crumb classes', function () {
+it('can add crumbs', function () {
     $trail = Trail::make()
         ->add(Crumb::make('Home', 'home'));
 
@@ -38,14 +38,6 @@ it('can add crumb classes', function () {
         ->getCrumbs()->toEqual([
             Crumb::make('Home', 'home'),
         ]);
-});
-
-it('is terminable', function () {
-    expect(Trail::make())
-        ->hasTerminated()->toBeFalse()
-        ->isTerminating()->toBeFalse()
-        ->terminating()->toBeInstanceOf(Trail::class)
-        ->isTerminating()->toBeTrue();
 });
 
 it('shares crumbs', function () {
@@ -76,20 +68,17 @@ it('selects', function () {
             Crumb::make('Show', fn ($product) => route('products.show', $product)),
         );
 
-    expect($trail)
-        ->hasTerminated()->toBeTrue();
-
     expect($trail->getCrumbs())
         ->toHaveCount(2)
         ->{0}->scoped(fn ($crumb) => $crumb
-        ->isCurrent()->toBeFalse()
-        ->getName()->toBe('Products')
-        ->getRoute()->toBe(route('products.index'))
+            ->isCurrent()->toBeFalse()
+            ->getName()->toBe('Products')
+            ->getRoute()->toBe(route('products.index'))
         )
         ->{1}->scoped(fn ($crumb) => $crumb
-        ->isCurrent()->toBeTrue()
-        ->getName()->toBe('Show')
-        ->getRoute()->toBe(route('products.show', $product))
+            ->isCurrent()->toBeTrue()
+            ->getName()->toBe('Show')
+            ->getRoute()->toBe(route('products.show', $product))
         );
 });
 

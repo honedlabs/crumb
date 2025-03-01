@@ -49,7 +49,7 @@ class TestCase extends Orchestra
             $table->uuid('public_id')->unique();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('status')->default(Status::AVAILABLE->value);
+            $table->string('status')->default(Status::Available->value);
             $table->unsignedInteger('price')->default(0);
             $table->boolean('best_seller')->default(false);
             $table->timestamps();

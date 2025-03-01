@@ -9,6 +9,7 @@ use Honed\Crumb\Tests\Stubs\Status;
 use function Pest\Laravel\get;
 
 it('can be made', function () {
+    get('/');
     expect(Crumb::make('Home', 'home'))->toBeInstanceOf(Crumb::class)
         ->getRoute()->toBe(route('home'))
         ->getName()->toBe('Home')
@@ -16,6 +17,7 @@ it('can be made', function () {
 });
 
 it('has array representation', function () {
+    get('/');
     expect(Crumb::make('Home', 'home')->toArray())
         ->toEqual([
             'name' => 'Home',
@@ -26,7 +28,6 @@ it('has array representation', function () {
 
 it('can resolve route model binding', function () {
     $p = product();
-
     get(route('products.show', $p));
 
     $crumb = Crumb::make(
@@ -42,12 +43,15 @@ it('can resolve route model binding', function () {
         ]);
 });
 
-it('can resolve route enum binding when retrieving array form', function () {
-    $e = Status::AVAILABLE;
+it('can resolve route enum binding', function () {
+    $e = Status::Available;
 
     get(route('status.show', $e));
 
-    $crumb = Crumb::make(fn ($status) => sprintf('Status: %s', $status->value), fn (Status $typed) => route('status.show', $typed));
+    $crumb = Crumb::make(
+        fn ($status) => sprintf('Status: %s', $status->value), 
+        fn (Status $typed) => route('status.show', $typed)
+    );
 
     expect($crumb->toArray())
         ->toEqual([
@@ -73,23 +77,26 @@ it('can resolve other bindings', function () {
 });
 
 it('checks if a crumb is current', function () {
-// Basic
-get(route('home'));
-
+    get(route('home'));
+    
     $crumb = Crumb::make('Home', 'home');
+    
     expect($crumb->isCurrent())->toBeTrue();
+});
 
-    // With binding
-    $a = product();
-    get(route('products.show', $a));
+it('checks if a crumb is current with parameter', function () {
+    $product = product();
+    get(route('products.show', $product));
 
     $crumb = Crumb::make('View', fn (Product $product) => route('products.show', $product));
     expect($crumb->isCurrent())->toBeTrue();
+});
 
-    // Same route, different binding
-    $b = product();
-    get(route('products.show', $b));
+it('checks if a crumb is not current', function () {
+    $product = product();
+    $other = product();
+    get(route('products.show', $other));
 
-    $crumb = Crumb::make('View', 'products.show', $a);
+    $crumb = Crumb::make('View')->url(route('products.show', $product));
     expect($crumb->isCurrent())->toBeFalse();
-    });
+});

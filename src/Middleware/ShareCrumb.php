@@ -21,7 +21,6 @@ class ShareCrumb
         $crumb ??= $this->getDefaultCrumb();
 
         if ($crumb) {
-
             Crumbs::get($crumb)->share();
         }
 
