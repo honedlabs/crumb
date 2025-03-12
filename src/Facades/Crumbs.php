@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Facades;
 
-use Honed\Crumb\Manager;
+use Honed\Crumb\CrumbFactory;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool hasTrail(string $name) Determine if the tail exists
  * @method static \Honed\Crumb\Trail get(string $name) Retrieve a crumb trail by name
  *
- * @see \Honed\Crumb\Manager
+ * @see \Honed\Crumb\CrumbFactory
  */
 class Crumbs extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return Manager::class;
+        return CrumbFactory::class;
     }
 }

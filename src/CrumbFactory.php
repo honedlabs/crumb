@@ -6,7 +6,7 @@ namespace Honed\Crumb;
 
 use Illuminate\Support\Arr;
 
-class Manager
+class CrumbFactory
 {
     /**
      * @var array<string,\Closure>

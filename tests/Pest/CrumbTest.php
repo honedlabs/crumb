@@ -12,7 +12,7 @@ it('can be made', function () {
     get('/');
     expect(Crumb::make('Home', 'home'))->toBeInstanceOf(Crumb::class)
         ->getRoute()->toBe(route('home'))
-        ->getName()->toBe('Home')
+        ->getLabel()->toBe('Home')
         ->hasIcon()->toBeFalse();
 });
 
@@ -20,7 +20,7 @@ it('has array representation', function () {
     get('/');
     expect(Crumb::make('Home', 'home')->toArray())
         ->toEqual([
-            'name' => 'Home',
+            'label' => 'Home',
             'url' => route('home'),
             'icon' => null,
         ]);
@@ -37,7 +37,7 @@ it('can resolve route model binding', function () {
 
     expect($crumb->toArray())
         ->toEqual([
-            'name' => $p->name,
+            'label' => $p->name,
             'url' => route('products.show', $p),
             'icon' => null,
         ]);
@@ -55,7 +55,7 @@ it('can resolve route enum binding', function () {
 
     expect($crumb->toArray())
         ->toEqual([
-            'name' => \sprintf('Status: %s', $e->value),
+            'label' => \sprintf('Status: %s', $e->value),
             'url' => route('status.show', $e),
             'icon' => null,
         ]);
@@ -70,7 +70,7 @@ it('can resolve other bindings', function () {
 
     expect($crumb->toArray())
         ->toEqual([
-            'name' => \sprintf('Given %s', $s),
+            'label' => \sprintf('Given %s', $s),
             'url' => route('word.show', $s),
             'icon' => null,
         ]);

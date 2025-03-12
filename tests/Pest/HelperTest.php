@@ -1,7 +1,8 @@
 <?php
 
-use Honed\Crumb\Manager;
+use Honed\Crumb\CrumbFactory;
+use Honed\Crumb\Facades\Crumbs;
 
 it('has a `crumbs` helper', function () {
-    expect(crumbs())->toBeInstanceOf(Manager::class);
+    expect(crumbs())->toBeInstanceOf(CrumbFactory::class);
 });

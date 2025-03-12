@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Honed\Crumb\Crumb;
+use Honed\Crumb\CrumbFactory;
 use Honed\Crumb\Facades\Crumbs;
-use Honed\Crumb\Manager;
 use Honed\Crumb\Trail;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 it('can be accessed via facade', function () {
-    expect(Crumbs::getFacadeRoot())->toBeInstanceOf(Manager::class);
+    expect(Crumbs::getFacadeRoot())->toBeInstanceOf(CrumbFactory::class);
 });
 
 it('autoloads from `routes` file', function () {
@@ -57,17 +57,17 @@ it('retrieves crumbs', function () {
     $response->assertInertia(fn (Assert $page) => $page->has('crumbs')
         ->count('crumbs', 3)
         ->where('crumbs.0', [
-            'name' => 'Home',
+            'label' => 'Home',
             'url' => route('home'),
             'icon' => null,
         ])
         ->where('crumbs.1', [
-            'name' => 'Products',
+            'label' => 'Products',
             'url' => route('products.index'),
             'icon' => null,
         ])
         ->where('crumbs.2', [
-            'name' => $product->name,
+            'label' => $product->name,
             'url' => route('products.show', $product),
             'icon' => null,
         ]));
@@ -79,12 +79,12 @@ it('can shortcut breadcrumbs', function () {
     $response->assertInertia(fn (Assert $page) => $page->has('crumbs')
         ->count('crumbs', 2)
         ->where('crumbs.0', [
-            'name' => 'Home',
+            'label' => 'Home',
             'url' => route('home'),
             'icon' => null,
         ])
         ->where('crumbs.1', [
-            'name' => 'Products',
+            'label' => 'Products',
             'url' => route('products.index'),
             'icon' => null,
         ]));

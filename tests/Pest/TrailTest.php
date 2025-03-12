@@ -49,7 +49,7 @@ it('shares crumbs', function () {
     $response->assertInertia(fn (Assert $page) => $page->has('crumbs')
         ->count('crumbs', 1)
         ->where('crumbs.0', [
-            'name' => 'Home',
+            'label' => 'Home',
             'url' => route('home'),
             'icon' => null,
         ]));
@@ -72,12 +72,12 @@ it('selects', function () {
         ->toHaveCount(2)
         ->{0}->scoped(fn ($crumb) => $crumb
             ->isCurrent()->toBeFalse()
-            ->getName()->toBe('Products')
+            ->getLabel()->toBe('Products')
             ->getRoute()->toBe(route('products.index'))
         )
         ->{1}->scoped(fn ($crumb) => $crumb
             ->isCurrent()->toBeTrue()
-            ->getName()->toBe('Show')
+            ->getLabel()->toBe('Show')
             ->getRoute()->toBe(route('products.show', $product))
         );
 });

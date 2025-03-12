@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Honed\Crumb;
 
 use Honed\Core\Concerns\HasIcon;
-use Honed\Core\Concerns\HasName;
+use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasRequest;
 use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Contracts\Resolves;
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\App;
 class Crumb extends Primitive implements Resolves
 {
     use HasIcon;
-    use HasName;
+    use HasLabel;
     use HasRequest;
     use HasRoute;
 
@@ -33,15 +33,15 @@ class Crumb extends Primitive implements Resolves
     /**
      * Make a new crumb instance.
      *
-     * @param  string|\Closure  $name
+     * @param  string|\Closure  $label
      * @param  string|\Closure|null  $link
      * @param  mixed  $parameters
      * @return $this
      */
-    public static function make($name, $link = null, $parameters = [])
+    public static function make($label, $link = null, $parameters = [])
     {
         return resolve(static::class)
-            ->name($name)
+            ->label($label)
             ->route($link, $parameters);
     }
 
@@ -50,7 +50,7 @@ class Crumb extends Primitive implements Resolves
      */
     public function resolve($parameters = [], $typed = [])
     {
-        $this->resolveName($parameters, $typed);
+        $this->resolveLabel($parameters, $typed);
         $this->resolveRoute($parameters, $typed);
 
         return $this;
@@ -76,7 +76,7 @@ class Crumb extends Primitive implements Resolves
         $this->resolve();
 
         return [
-            'name' => $this->getName(),
+            'label' => $this->getLabel(),
             'url' => $this->getRoute(),
             'icon' => $this->getIcon(),
         ];
