@@ -8,17 +8,13 @@ use Honed\Core\Concerns\HasIcon;
 use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasRequest;
 use Honed\Core\Concerns\HasRoute;
-use Honed\Core\Contracts\Resolves;
 use Honed\Core\Primitive;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 
-/**
- * @extends \Honed\Core\Primitive<string, mixed>
- */
-class Crumb extends Primitive implements Resolves
+class Crumb extends Primitive
 {
     use HasIcon;
     use HasLabel;
@@ -33,27 +29,21 @@ class Crumb extends Primitive implements Resolves
     /**
      * Make a new crumb instance.
      *
-     * @param  string|\Closure  $label
-     * @param  string|\Closure|null  $link
+     * @param  string|\Closure(mixed...):string  $label
+     * @param  string|\Closure(mixed...):string|null  $route
      * @param  mixed  $parameters
      * @return $this
      */
-    public static function make($label, $link = null, $parameters = [])
+    public static function make($label, $route = null, $parameters = [])
     {
-        return resolve(static::class)
-            ->label($label)
-            ->route($link, $parameters);
-    }
+        $crumb = resolve(static::class)
+            ->label($label);
 
-    /**
-     * {@inheritDoc}
-     */
-    public function resolve($parameters = [], $typed = [])
-    {
-        $this->resolveLabel($parameters, $typed);
-        $this->resolveRoute($parameters, $typed);
+        if ($route) {
+            return $crumb->route($route, $parameters);
+        }
 
-        return $this;
+        return $crumb;
     }
 
     /**
@@ -63,7 +53,7 @@ class Crumb extends Primitive implements Resolves
      */
     public function isCurrent()
     {
-        $route = $this->resolveRoute();
+        $route = $this->getRoute();
 
         return (bool) ($route ? $this->getRequest()->url() === $route : false);
     }
@@ -73,8 +63,6 @@ class Crumb extends Primitive implements Resolves
      */
     public function toArray()
     {
-        $this->resolve();
-
         return [
             'label' => $this->getLabel(),
             'url' => $this->getRoute(),

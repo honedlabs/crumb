@@ -7,12 +7,8 @@ namespace Honed\Crumb;
 use Honed\Core\Primitive;
 use Honed\Crumb\Support\Parameters;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Inertia\Inertia;
 
-/**
- * @extends \Honed\Core\Primitive<string, mixed>
- */
 class Trail extends Primitive
 {
     /**
@@ -64,14 +60,12 @@ class Trail extends Primitive
     /**
      * Merge a set of crumbs with existing.
      *
-     * @param  array<int,\Honed\Crumb\Crumb>|\Illuminate\Support\Collection<int,\Honed\Crumb\Crumb>  $crumbs
+     * @param  iterable<int,\Honed\Crumb\Crumb>  ...$crumbs
      * @return $this
      */
-    public function crumbs($crumbs)
+    public function crumbs(...$crumbs)
     {
-        if ($crumbs instanceof Collection) {
-            $crumbs = $crumbs->all();
-        }
+        $crumbs = Arr::flatten($crumbs);
 
         $this->crumbs = \array_merge($this->crumbs, $crumbs);
 
@@ -97,19 +91,6 @@ class Trail extends Primitive
         $this->addCrumb($crumb);
 
         $this->terminated = $crumb->isCurrent();
-
-        return $this;
-    }
-
-    /**
-     * Add a single crumb to the list of crumbs.
-     *
-     * @param  \Honed\Crumb\Crumb  $crumb
-     * @return $this
-     */
-    protected function addCrumb($crumb)
-    {
-        $this->crumbs[] = $crumb;
 
         return $this;
     }
@@ -141,6 +122,19 @@ class Trail extends Primitive
             $this->addCrumb($crumb);
             $this->terminated = true;
         }
+
+        return $this;
+    }
+
+    /**
+     * Add a single crumb to the list of crumbs.
+     *
+     * @param  \Honed\Crumb\Crumb  $crumb
+     * @return $this
+     */
+    protected function addCrumb($crumb)
+    {
+        $this->crumbs[] = $crumb;
 
         return $this;
     }

@@ -10,7 +10,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\get;
 
-it('can be made', function () {
+it('makes', function () {
     $trail = Trail::make(Crumb::make('Home', 'home'));
 
     expect($trail)->toBeInstanceOf(Trail::class)
@@ -29,7 +29,7 @@ it('has array representation', function () {
         ]);
 });
 
-it('can add crumbs', function () {
+it('adds', function () {
     $trail = Trail::make()
         ->add(Crumb::make('Home', 'home'));
 
