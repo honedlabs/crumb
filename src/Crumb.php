@@ -53,7 +53,7 @@ class Crumb extends Primitive
      */
     public function isCurrent()
     {
-        $route = $this->getRoute();
+        $route = $this->resolveRoute();
 
         return (bool) ($route ? $this->getRequest()->url() === $route : false);
     }
@@ -65,7 +65,7 @@ class Crumb extends Primitive
     {
         return [
             'label' => $this->getLabel(),
-            'url' => $this->getRoute(),
+            'url' => $this->resolveRoute(),
             'icon' => $this->getIcon(),
         ];
     }
@@ -115,7 +115,7 @@ class Crumb extends Primitive
             default => Arr::get(
                 $parameters,
                 $parameterType,
-                fn () => App::make($parameterType)
+                [App::make($parameterType)],
             ),
         };
     }

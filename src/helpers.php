@@ -4,12 +4,11 @@ use Honed\Crumb\Facades\Crumbs;
 
 if (! \function_exists('crumbs')) {
     /**
-     * Nav facade accessor
+     * Access the crumb factory.
      *
-     * @param string|
-     * @return \Honed\Nav\Nav
+     * @return \Honed\Crumb\CrumbFactory
      */
-    function crumbs(...$items)
+    function crumbs()
     {
         $instance = Crumbs::getFacadeRoot();
 

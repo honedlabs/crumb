@@ -17,6 +17,22 @@ use Illuminate\Support\Facades\Facade;
  */
 class Crumbs extends Facade
 {
+    /**
+     * Get the root object behind the facade.
+     *
+     * @return \Honed\Crumb\CrumbFactory
+     */
+    public static function getFacadeRoot()
+    {
+        // @phpstan-ignore-next-line
+        return parent::getFacadeRoot();
+    }
+
+    /**
+     * Get the registered name of the component.
+     *
+     * @return string
+     */
     protected static function getFacadeAccessor(): string
     {
         return CrumbFactory::class;

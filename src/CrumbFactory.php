@@ -95,8 +95,10 @@ class CrumbFactory
      *
      * @param  string  $crumb
      * @return never
+     *
+     * @throws \InvalidArgumentException
      */
-    protected static function throwCrumbNotFoundException($crumb)
+    public static function throwCrumbNotFoundException($crumb)
     {
         throw new \InvalidArgumentException(
             \sprintf('There were no crumbs defined for [%s].', $crumb)
@@ -108,8 +110,10 @@ class CrumbFactory
      *
      * @param  string  $crumb
      * @return never
+     *
+     * @throws \InvalidArgumentException
      */
-    protected static function throwDuplicateCrumbsException($crumb)
+    public static function throwDuplicateCrumbsException($crumb)
     {
         throw new \InvalidArgumentException(
             \sprintf('There already exists a crumb with the name [%s].', $crumb)

@@ -60,7 +60,7 @@ class Trail extends Primitive
     /**
      * Merge a set of crumbs with existing.
      *
-     * @param  iterable<int,\Honed\Crumb\Crumb>  ...$crumbs
+     * @param  \Honed\Crumb\Crumb|iterable<int,\Honed\Crumb\Crumb>  ...$crumbs
      * @return $this
      */
     public function crumbs(...$crumbs)
@@ -88,7 +88,7 @@ class Trail extends Primitive
 
         $crumb = $crumb instanceof Crumb ? $crumb : Crumb::make($crumb, $link, $parameters);
 
-        $this->addCrumb($crumb);
+        $this->crumbs[] = $crumb;
 
         $this->terminated = $crumb->isCurrent();
 
@@ -119,7 +119,7 @@ class Trail extends Primitive
         );
 
         if ($crumb) {
-            $this->addCrumb($crumb);
+            $this->crumbs[] = $crumb;
             $this->terminated = true;
         }
 
@@ -160,17 +160,6 @@ class Trail extends Primitive
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function toArray()
-    {
-        return \array_map(
-            static fn (Crumb $crumb) => $crumb->toArray(),
-            $this->getCrumbs()
-        );
-    }
-
-    /**
      * Share the crumbs with Inertia.
      *
      * @return $this
@@ -183,11 +172,24 @@ class Trail extends Primitive
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        return \array_map(
+            static fn (Crumb $crumb) => $crumb->toArray(),
+            $this->getCrumbs()
+        );
+    }
+
+    /**
      * Throw an exception if `select` is called on a non-terminating crumb.
      *
      * @return never
+     *
+     * @throws \BadMethodCallException
      */
-    protected static function throwNonTerminatingCrumbException()
+    public static function throwNonTerminatingCrumbException()
     {
         throw new \BadMethodCallException(
             'This method is only available on terminating crumbs.'
