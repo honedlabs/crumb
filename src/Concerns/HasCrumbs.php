@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Concerns;
 
-use Honed\Crumb\Attributes\Crumb;
-use Honed\Crumb\Exceptions\ClassDoesNotExtendControllerException;
+use Honed\Crumb\Attributes\Trail;
+use Honed\Crumb\Exceptions\ControllerExtensionException;
+use Honed\Crumb\Middleware\ShareCrumb;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 
@@ -21,17 +22,17 @@ trait HasCrumbs
      *
      * @return void
      *
-     * @throws ClassDoesNotExtendControllerException
+     * @throws \Honed\Crumb\Exceptions\ControllerExtensionException
      */
     public function configureCrumbs()
     {
         if (! \in_array('Illuminate\Routing\Controller', \class_parents($this))) {
-            static::throwControllerExtensionException(\class_basename($this));
+            ControllerExtensionException::throw(static::class);
         }
 
         $name = $this->getCrumbName();
 
-        $this->middleware('crumb:'.$name);
+        $this->middleware(ShareCrumb::trail($name));
     }
 
     /**
@@ -77,24 +78,10 @@ trait HasCrumbs
      */
     protected function getClassCrumbAttribute()
     {
-        $attribute = Arr::first(
-            (new \ReflectionClass($this))->getAttributes(Crumb::class)
+        $trail = Arr::first(
+            (new \ReflectionClass($this))->getAttributes(Trail::class)
         );
 
-        return $attribute?->newInstance()->getCrumbName();
-    }
-
-    /**
-     * Throw an exception for when the using class is not a controller.
-     *
-     * @param  string  $class
-     * @return never
-     */
-    protected static function throwControllerExtensionException($class)
-    {
-        throw new \LogicException(\sprintf(
-            'Class [%s] does not extend the [Illuminate\Routing\Controller] controller class.',
-            $class
-        ));
+        return $trail?->newInstance()->getTrail();
     }
 }

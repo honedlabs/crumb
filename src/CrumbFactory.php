@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
+use Honed\Crumb\Exceptions\DuplicateTrailException;
+use Honed\Crumb\Exceptions\TrailNotFoundException;
 use Illuminate\Support\Arr;
 
 class CrumbFactory
@@ -38,12 +40,12 @@ class CrumbFactory
      * @param  \Closure  $trail
      * @return $this
      *
-     * @throws \InvalidArgumentException
+     * @throws \Honed\Crumb\Exceptions\DuplicateTrailException
      */
     public function for($name, $trail)
     {
         if ($this->hasTrail($name)) {
-            static::throwDuplicateCrumbsException($name);
+            DuplicateTrailException::throw($name);
         }
 
         Arr::set($this->trails, $name, $trail);
@@ -68,12 +70,12 @@ class CrumbFactory
      * @param  string  $name
      * @return \Honed\Crumb\Trail
      *
-     * @throws \InvalidArgumentException
+     * @throws \Honed\Crumb\Exceptions\TrailNotFoundException
      */
     public function get($name)
     {
         if (! $this->hasTrail($name)) {
-            static::throwCrumbNotFoundException($name);
+            TrailNotFoundException::throw($name);
         }
 
         $trail = Trail::make()->terminating();
@@ -88,35 +90,5 @@ class CrumbFactory
         \call_user_func($callback, $trail);
 
         return $trail;
-    }
-
-    /**
-     * Throw an exception for a missing crumb trail.
-     *
-     * @param  string  $crumb
-     * @return never
-     *
-     * @throws \InvalidArgumentException
-     */
-    public static function throwCrumbNotFoundException($crumb)
-    {
-        throw new \InvalidArgumentException(
-            \sprintf('There were no crumbs defined for [%s].', $crumb)
-        );
-    }
-
-    /**
-     * Throw an exception for a duplicate crumb trail.
-     *
-     * @param  string  $crumb
-     * @return never
-     *
-     * @throws \InvalidArgumentException
-     */
-    public static function throwDuplicateCrumbsException($crumb)
-    {
-        throw new \InvalidArgumentException(
-            \sprintf('There already exists a crumb with the name [%s].', $crumb)
-        );
     }
 }

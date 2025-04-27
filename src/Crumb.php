@@ -53,7 +53,7 @@ class Crumb extends Primitive
      */
     public function isCurrent()
     {
-        $route = $this->resolveRoute();
+        $route = $this->getRoute();
 
         return (bool) ($route ? $this->getRequest()->url() === $route : false);
     }
@@ -65,7 +65,7 @@ class Crumb extends Primitive
     {
         return [
             'label' => $this->getLabel(),
-            'url' => $this->resolveRoute(),
+            'url' => $this->getRoute(),
             'icon' => $this->getIcon(),
         ];
     }

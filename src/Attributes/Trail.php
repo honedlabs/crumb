@@ -7,20 +7,19 @@ namespace Honed\Crumb\Attributes;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class Crumb
+class Trail
 {
-    public function __construct(protected readonly string $crumb)
-    {
-        //
-    }
+    public function __construct(
+        protected readonly string $trail
+    ) { }
 
     /**
      * Get the name of the crumb.
      *
      * @return string
      */
-    public function getCrumbName()
+    public function getTrail()
     {
-        return $this->crumb;
+        return $this->trail;
     }
 }

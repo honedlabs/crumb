@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Support;
 
-class Parameters
+class Constants
 {
-    const Prop = 'crumbs';
+    const PROP = 'crumbs';
 }

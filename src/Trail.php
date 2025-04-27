@@ -35,26 +35,13 @@ class Trail extends Primitive
     /**
      * Make a new trail instance.
      *
-     * @param  \Honed\Crumb\Crumb  $crumbs
+     * @param  \Honed\Crumb\Crumb|iterable<int,\Honed\Crumb\Crumb>  ...$crumbs
      * @return static
      */
     public static function make(...$crumbs)
     {
         return resolve(static::class)
             ->crumbs($crumbs);
-    }
-
-    /**
-     * Set the trail to terminate when a crumb in the trail matches.
-     *
-     * @param  bool  $terminating
-     * @return $this
-     */
-    public function terminating($terminating = true)
-    {
-        $this->terminating = $terminating;
-
-        return $this;
     }
 
     /**
@@ -86,7 +73,9 @@ class Trail extends Primitive
             return $this;
         }
 
-        $crumb = $crumb instanceof Crumb ? $crumb : Crumb::make($crumb, $link, $parameters);
+        $crumb = $crumb instanceof Crumb 
+            ? $crumb 
+            : Crumb::make($crumb, $link, $parameters);
 
         $this->crumbs[] = $crumb;
 
@@ -150,16 +139,6 @@ class Trail extends Primitive
     }
 
     /**
-     * Determine if the instance has crumbs.
-     *
-     * @return bool
-     */
-    public function hasCrumbs()
-    {
-        return filled($this->getCrumbs());
-    }
-
-    /**
      * Share the crumbs with Inertia.
      *
      * @return $this
@@ -169,6 +148,49 @@ class Trail extends Primitive
         Inertia::share(Parameters::Prop, $this->toArray());
 
         return $this;
+    }
+
+    /**
+     * Set the trail to terminate when a crumb in the trail matches.
+     *
+     * @param  bool  $terminating
+     * @return $this
+     */
+    protected function terminating($terminating = true)
+    {
+        $this->terminating = $terminating;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the trail is terminating.
+     *
+     * @return bool
+     */
+    protected function isTerminating()
+    {
+        return $this->terminating;
+    }
+
+    /**
+     * Set the trail to have been terminated.
+     *
+     * @return $this
+     */
+    protected function terminate()
+    {
+        $this->terminated = true;
+    }
+
+    /**
+     * Determine if the trail has been terminated.
+     *
+     * @return bool
+     */
+    protected function isTerminated()
+    {
+        return $this->terminated;
     }
 
     /**
