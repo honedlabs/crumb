@@ -73,8 +73,8 @@ class Trail extends Primitive
             return $this;
         }
 
-        $crumb = $crumb instanceof Crumb 
-            ? $crumb 
+        $crumb = $crumb instanceof Crumb
+            ? $crumb
             : Crumb::make($crumb, $link, $parameters);
 
         $this->crumbs[] = $crumb;
