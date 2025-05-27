@@ -25,6 +25,6 @@ class TrailCannotTerminateException extends \BadMethodCallException
      */
     public static function throw()
     {
-        throw new self();
+        throw new self;
     }
 }
