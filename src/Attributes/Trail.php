@@ -11,7 +11,7 @@ class Trail
 {
     public function __construct(
         protected readonly string $trail
-    ) { }
+    ) {}
 
     /**
      * Get the name of the crumb.
