@@ -10,6 +10,9 @@ use Honed\Crumb\Middleware\ShareCrumb;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * @phpstan-require-extends \Illuminate\Routing\Controller
+ */
 trait HasCrumbs
 {
     public function __construct()
@@ -26,10 +29,6 @@ trait HasCrumbs
      */
     public function configureCrumbs()
     {
-        if (! \in_array('Illuminate\Routing\Controller', \class_parents($this))) {
-            ControllerExtensionException::throw(static::class);
-        }
-
         $name = $this->getCrumbName();
 
         $this->middleware(ShareCrumb::trail($name));

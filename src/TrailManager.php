@@ -8,7 +8,7 @@ use Honed\Crumb\Exceptions\DuplicateTrailException;
 use Honed\Crumb\Exceptions\TrailNotFoundException;
 use Illuminate\Support\Arr;
 
-class CrumbFactory
+class TrailManager
 {
     /**
      * @var array<string,\Closure>

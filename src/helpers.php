@@ -6,7 +6,7 @@ if (! \function_exists('crumbs')) {
     /**
      * Access the crumb factory.
      *
-     * @return \Honed\Crumb\CrumbFactory
+     * @return \Honed\Crumb\TrailManager
      */
     function crumbs()
     {

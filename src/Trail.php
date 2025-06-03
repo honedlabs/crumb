@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Honed\Crumb;
 
 use Honed\Core\Primitive;
-use Honed\Crumb\Support\Parameters;
+use Honed\Crumb\Exceptions\TrailCannotTerminateException;
+use Honed\Crumb\Support\Constants;
 use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
@@ -73,8 +74,8 @@ class Trail extends Primitive
             return $this;
         }
 
-        $crumb = $crumb instanceof Crumb
-            ? $crumb
+        $crumb = $crumb instanceof Crumb 
+            ? $crumb 
             : Crumb::make($crumb, $link, $parameters);
 
         $this->crumbs[] = $crumb;
@@ -99,7 +100,7 @@ class Trail extends Primitive
         }
 
         if (! $this->terminating) {
-            static::throwNonTerminatingCrumbException();
+            TrailCannotTerminateException::throw();
         }
 
         $crumb = Arr::first(
@@ -145,7 +146,7 @@ class Trail extends Primitive
      */
     public function share()
     {
-        Inertia::share(Parameters::Prop, $this->toArray());
+        Inertia::share(Constants::PROP, $this->toArray());
 
         return $this;
     }
@@ -201,20 +202,6 @@ class Trail extends Primitive
         return \array_map(
             static fn (Crumb $crumb) => $crumb->toArray(),
             $this->getCrumbs()
-        );
-    }
-
-    /**
-     * Throw an exception if `select` is called on a non-terminating crumb.
-     *
-     * @return never
-     *
-     * @throws \BadMethodCallException
-     */
-    public static function throwNonTerminatingCrumbException()
-    {
-        throw new \BadMethodCallException(
-            'This method is only available on terminating crumbs.'
         );
     }
 }

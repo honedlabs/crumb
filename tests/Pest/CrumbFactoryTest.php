@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Crumb\Crumb;
-use Honed\Crumb\CrumbFactory;
+use Honed\Crumb\TrailManager;
 use Honed\Crumb\Facades\Crumbs;
 use Honed\Crumb\Trail;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 it('can be accessed via facade', function () {
-    expect(Crumbs::getFacadeRoot())->toBeInstanceOf(CrumbFactory::class);
+    expect(Crumbs::getFacadeRoot())->toBeInstanceOf(TrailManager::class);
 });
 
 it('autoloads from `routes` file', function () {
