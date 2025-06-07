@@ -6,15 +6,13 @@ use Honed\Crumb\Concerns\HasCrumbs;
 use Illuminate\Routing\Controller;
 
 it('must be controller', function () {
-    $test = new class()
-    {
+    $test = new class {
         use HasCrumbs;
     };
-})->throws(LogicException::class);
+})->throws(\LogicException::class);
 
 it('gets crumb from method', function () {
-    $test = new class() extends Controller
-    {
+    $test = new class extends Controller {
         use HasCrumbs;
 
         public function crumb()
