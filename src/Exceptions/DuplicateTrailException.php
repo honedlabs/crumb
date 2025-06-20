@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Exceptions;
 
-use InvalidArgumentException;
-
-use function sprintf;
-
-class DuplicateTrailException extends InvalidArgumentException
+class DuplicateTrailException extends \InvalidArgumentException
 {
     /**
      * Create a new duplicate trail exception.
@@ -18,7 +14,7 @@ class DuplicateTrailException extends InvalidArgumentException
     public function __construct($name)
     {
         parent::__construct(
-            sprintf(
+            \sprintf(
                 'There is already a trail named [%s].',
                 $name
             )
