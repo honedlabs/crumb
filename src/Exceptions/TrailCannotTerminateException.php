@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Exceptions;
 
-use BadMethodCallException;
-
-class TrailCannotTerminateException extends BadMethodCallException
+class TrailCannotTerminateException extends \BadMethodCallException
 {
     /**
      * Create a new trail cannot terminate exception.
