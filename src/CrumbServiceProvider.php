@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-use function is_file;
-use function is_string;
-
 final class CrumbServiceProvider extends ServiceProvider
 {
     /**
@@ -31,7 +28,7 @@ final class CrumbServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/crumb.php' => config_path('crumb.php'),
-        ], 'config');
+        ], 'crumb-config');
 
         Event::listen(RouteMatched::class, function () {
             $this->registerCrumbs();
@@ -60,7 +57,7 @@ final class CrumbServiceProvider extends ServiceProvider
             return;
         }
 
-        if (is_string($files) && ! is_file($files)) {
+        if (\is_string($files) && ! \is_file($files)) {
             return;
         }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
-use Closure;
 use Honed\Core\Concerns\HasIcon;
 use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasRequest;
@@ -15,9 +14,6 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 
-use function get_class;
-use function is_object;
-
 class Crumb extends Primitive
 {
     use HasIcon;
@@ -27,14 +23,16 @@ class Crumb extends Primitive
 
     public function __construct(Request $request)
     {
+        parent::__construct();
+
         $this->request($request);
     }
 
     /**
      * Make a new crumb instance.
      *
-     * @param  string|Closure(mixed...):string  $label
-     * @param  string|Closure(mixed...):string|null  $route
+     * @param  string|\Closure(mixed...):string  $label
+     * @param  string|\Closure(mixed...):string|null  $route
      * @param  mixed  $parameters
      * @return $this
      */
@@ -86,15 +84,15 @@ class Crumb extends Primitive
             static fn ($value, $key) => [$key => [$value]]
         );
 
+        if (isset($parameters[$parameterName])) {
+            return $parameters[$parameterName];
+        }
+
         /** @var array<int, mixed> */
         return match ($parameterName) {
             'request' => [$request],
             'route' => [$request->route()],
-            default => Arr::get(
-                $parameters,
-                $parameterName,
-                parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
-            ),
+            default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
         };
     }
 
@@ -107,8 +105,8 @@ class Crumb extends Primitive
 
         $parameters = Arr::mapWithKeys(
             $request->route()?->parameters() ?? [],
-            static fn ($value) => is_object($value)
-                ? [get_class($value) => [$value]]
+            static fn ($value) => \is_object($value)
+                ? [\get_class($value) => [$value]]
                 : [],
         );
 
@@ -116,11 +114,7 @@ class Crumb extends Primitive
         return match ($parameterType) {
             Request::class => [$request],
             Route::class => [$request->route()],
-            default => Arr::get(
-                $parameters,
-                $parameterType,
-                [App::make($parameterType)],
-            ),
+            default => parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType),
         };
     }
 }

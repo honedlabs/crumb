@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 return [
 
     /*
@@ -26,5 +24,9 @@ return [
     |
     */
 
-    'default' => null,
+    'default' => null, // -> move to static
+
+    'implementation' => \Honed\Crumb\TrailManager::class,
+
+    'property' => 'crumbs',
 ];
