@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
-use Closure;
 use Honed\Core\Concerns\HasIcon;
 use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasRequest;
@@ -13,9 +12,7 @@ use Honed\Core\Primitive;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
-
-use function get_class;
-use function is_object;
+use Illuminate\Support\Facades\App;
 
 class Crumb extends Primitive
 {
@@ -34,8 +31,8 @@ class Crumb extends Primitive
     /**
      * Make a new crumb instance.
      *
-     * @param  string|Closure(mixed...):string  $label
-     * @param  string|Closure(mixed...):string|null  $route
+     * @param  string|\Closure(mixed...):string  $label
+     * @param  string|\Closure(mixed...):string|null  $route
      * @param  mixed  $parameters
      * @return $this
      */
@@ -108,8 +105,8 @@ class Crumb extends Primitive
 
         $parameters = Arr::mapWithKeys(
             $request->route()?->parameters() ?? [],
-            static fn ($value) => is_object($value)
-                ? [get_class($value) => [$value]]
+            static fn ($value) => \is_object($value)
+                ? [\get_class($value) => [$value]]
                 : [],
         );
 
