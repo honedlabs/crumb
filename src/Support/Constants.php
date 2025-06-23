@@ -6,5 +6,5 @@ namespace Honed\Crumb\Support;
 
 class Constants
 {
-    const PROP = 'crumbs';
+    public const PROP = 'crumbs';
 }

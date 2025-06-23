@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Honed\Crumb\Crumb;
-use Honed\Crumb\TrailManager;
 use Honed\Crumb\Facades\Crumbs;
 use Honed\Crumb\Trail;
+use Honed\Crumb\TrailManager;
 use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\get;
@@ -41,14 +41,14 @@ it('can set crumbs before all other crumbs', function () {
 it('throws error if the key does not exist', function () {
     get('/');
     Crumbs::get('not-found');
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);
 
 it('throws error if the key already exists', function () {
     get('/');
     Crumbs::for($this->crumb, function (Trail $trail) {
         $trail->add(Crumb::make('Home', '/'));
     });
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);
 
 it('retrieves crumbs', function () {
     $product = product();
