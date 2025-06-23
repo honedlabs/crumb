@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Exceptions;
 
-class TrailNotFoundException extends \InvalidArgumentException
+use InvalidArgumentException;
+
+use function sprintf;
+
+class TrailNotFoundException extends InvalidArgumentException
 {
     /**
      * Create a new trail not found exception.
@@ -14,7 +18,7 @@ class TrailNotFoundException extends \InvalidArgumentException
     public function __construct($name)
     {
         parent::__construct(
-            \sprintf(
+            sprintf(
                 'No trail named [%s] exists.',
                 $name
             )
