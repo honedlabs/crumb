@@ -16,16 +16,27 @@
     backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="Honed Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Arch">
+            <file>tests/ArchTest.php</file>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
     <logging>
         <junit outputFile="build/report.junit.xml"/>
     </logging>
+    <coverage includeUncoveredFiles="true">
+        <report>
+            <clover outputFile="clover.xml" />
+        </report>
+    </coverage>
     <source>
         <include>
             <directory suffix=".php">./src</directory>
         </include>
     </source>
+    <php>
+        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF" />
+    </php>
 </phpunit>

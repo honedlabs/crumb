@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
-use Closure;
 use Honed\Core\Concerns\HasIcon;
 use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasRequest;
-use Honed\Core\Concerns\HasRoute;
+use Honed\Core\Concerns\HasUrl;
 use Honed\Core\Primitive;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
-
-use function get_class;
-use function is_object;
+use Illuminate\Support\Facades\App;
 
 class Crumb extends Primitive
 {
     use HasIcon;
     use HasLabel;
     use HasRequest;
-    use HasRoute;
+    use HasUrl;
 
     public function __construct(Request $request)
     {
@@ -34,8 +31,8 @@ class Crumb extends Primitive
     /**
      * Make a new crumb instance.
      *
-     * @param  string|Closure(mixed...):string  $label
-     * @param  string|Closure(mixed...):string|null  $route
+     * @param  string|\Closure(mixed...):string  $label
+     * @param  string|\Closure(mixed...):string|null  $route
      * @param  mixed  $parameters
      * @return $this
      */
@@ -45,7 +42,7 @@ class Crumb extends Primitive
             ->label($label);
 
         if ($route) {
-            return $crumb->route($route, $parameters);
+            return $crumb->url($route, $parameters);
         }
 
         return $crumb;
@@ -58,27 +55,29 @@ class Crumb extends Primitive
      */
     public function isCurrent()
     {
-        $route = $this->getRoute();
+        $url = $this->getUrl();
 
-        return (bool) ($route ? $this->getRequest()->url() === $route : false);
+        return (bool) ($url ? $this->getRequest()->url() === $url : false);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function toArray()
+    protected function representation(): array
     {
         return [
             'label' => $this->getLabel(),
-            'url' => $this->getRoute(),
+            'url' => $this->getUrl(),
             'icon' => $this->getIcon(),
         ];
     }
 
     /**
-     * {@inheritDoc}
+     * Provide a selection of default dependencies for evaluation by name.
+     *
+     * @return list<mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
+    protected function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
         $request = $this->getRequest();
 
@@ -100,16 +99,18 @@ class Crumb extends Primitive
     }
 
     /**
-     * {@inheritDoc}
+     * Provide a selection of default dependencies for evaluation by type.
+     *
+     * @return list<mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
+    protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
         $request = $this->getRequest();
 
         $parameters = Arr::mapWithKeys(
             $request->route()?->parameters() ?? [],
-            static fn ($value) => is_object($value)
-                ? [get_class($value) => [$value]]
+            static fn ($value) => \is_object($value)
+                ? [\get_class($value) => [$value]]
                 : [],
         );
 

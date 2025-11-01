@@ -9,29 +9,29 @@ use Honed\Crumb\Exceptions\DuplicateTrailException;
 use Honed\Crumb\Exceptions\TrailNotFoundException;
 use Illuminate\Support\Arr;
 
-use function array_keys;
-use function call_user_func;
-use function in_array;
-
 class TrailManager
 {
     /**
-     * @var array<string,Closure>
+     * The trails defined for the application.
+     * 
+     * @var array<string,\Closure>
      */
     protected $trails = [];
 
     /**
-     * @var Closure|null
+     * The trail to be added globally, before all other crumbs.
+     * 
+     * @var \Closure|null
      */
     protected $before = null;
 
     /**
      * Set a crumb to be added globally, before all other crumbs.
      *
-     * @param  Closure  $trail
+     * @param  \Closure  $trail
      * @return $this
      */
-    public function before($trail)
+    public function before(Closure $trail): static
     {
         $this->before = $trail;
 
@@ -42,12 +42,12 @@ class TrailManager
      * Set a crumb trail for a given name.
      *
      * @param  string  $name
-     * @param  Closure  $trail
+     * @param  \Closure  $trail
      * @return $this
      *
-     * @throws DuplicateTrailException
+     * @throws \Honed\Crumb\Exceptions\DuplicateTrailException
      */
-    public function for($name, $trail)
+    public function for(string $name, Closure $trail): static
     {
         if ($this->hasTrail($name)) {
             DuplicateTrailException::throw($name);
@@ -64,20 +64,20 @@ class TrailManager
      * @param  string  $name
      * @return bool
      */
-    public function hasTrail($name)
+    public function hasTrail(string $name): bool
     {
-        return in_array($name, array_keys($this->trails));
+        return \in_array($name, \array_keys($this->trails));
     }
 
     /**
      * Retrieve a crumb trail by name.
      *
      * @param  string  $name
-     * @return Trail
+     * @return \Honed\Crumb\Trail
      *
-     * @throws TrailNotFoundException
+     * @throws \Honed\Crumb\Exceptions\TrailNotFoundException
      */
-    public function get($name)
+    public function get(string $name): Trail
     {
         if (! $this->hasTrail($name)) {
             TrailNotFoundException::throw($name);
@@ -86,13 +86,13 @@ class TrailManager
         $trail = Trail::make()->terminating();
 
         if ($this->before) {
-            call_user_func($this->before, $trail);
+            \call_user_func($this->before, $trail);
         }
 
-        /** @var Closure */
+        /** @var \Closure */
         $callback = Arr::get($this->trails, $name);
 
-        call_user_func($callback, $trail);
+        \call_user_func($callback, $trail);
 
         return $trail;
     }

@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Exceptions;
 
-use LogicException;
-
-use function sprintf;
-
-class ControllerExtensionException extends LogicException
+class ControllerExtensionException extends \LogicException
 {
     /**
      * Create a new controller extension exception.
@@ -18,7 +14,7 @@ class ControllerExtensionException extends LogicException
     public function __construct($class)
     {
         parent::__construct(
-            sprintf(
+            \sprintf(
                 'Class [%s] does not extend the [Illuminate\Routing\Controller] controller class.',
                 $class
             )
