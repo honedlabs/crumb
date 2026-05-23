@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-use function is_file;
-use function is_string;
-
 final class CrumbServiceProvider extends ServiceProvider
 {
     /**
@@ -60,7 +57,7 @@ final class CrumbServiceProvider extends ServiceProvider
             return;
         }
 
-        if (is_string($files) && ! is_file($files)) {
+        if (\is_string($files) && ! \is_file($files)) {
             return;
         }
 

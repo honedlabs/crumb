@@ -9,11 +9,6 @@ use Honed\Crumb\Exceptions\ControllerExtensionException;
 use Honed\Crumb\Middleware\ShareCrumb;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
-use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionMethod;
-
-use function method_exists;
 
 /**
  * @phpstan-require-extends \Illuminate\Routing\Controller
@@ -30,7 +25,7 @@ trait HasCrumbs
      *
      * @return void
      *
-     * @throws ControllerExtensionException
+     * @throws \Honed\Crumb\Exceptions\ControllerExtensionException
      */
     public function configureCrumbs()
     {
@@ -50,7 +45,7 @@ trait HasCrumbs
             (bool) ($name = $this->getMethodCrumbAttribute()) => $name,
             (bool) ($name = $this->getClassCrumbAttribute()) => $name,
             isset($this->crumb) => $this->crumb,
-            method_exists($this, 'crumb') => $this->crumb(),
+            \method_exists($this, 'crumb') => $this->crumb(),
             default => null,
         };
     }
@@ -67,9 +62,9 @@ trait HasCrumbs
         if (! $action) {
             return null;
         }
-        /** @var ReflectionAttribute<\Honed\Crumb\Attributes\Crumb>|null $attribute */
+        /** @var \ReflectionAttribute<\Honed\Crumb\Attributes\Crumb>|null $attribute */
         $attribute = Arr::first(
-            (new ReflectionMethod($this, $action))->getAttributes(Crumb::class)
+            (new \ReflectionMethod($this, $action))->getAttributes(Crumb::class)
         );
 
         return $attribute?->newInstance()->getCrumbName();
@@ -83,7 +78,7 @@ trait HasCrumbs
     protected function getClassCrumbAttribute()
     {
         $trail = Arr::first(
-            (new ReflectionClass($this))->getAttributes(Trail::class)
+            (new \ReflectionClass($this))->getAttributes(Trail::class)
         );
 
         return $trail?->newInstance()->getTrail();

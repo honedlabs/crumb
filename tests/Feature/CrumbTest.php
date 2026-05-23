@@ -49,7 +49,7 @@ it('can resolve route enum binding', function () {
     get(route('status.show', $e));
 
     $crumb = Crumb::make(
-        fn ($status) => sprintf('Status: %s', $status->value),
+        fn ($status) => sprintf('Status: %s', $status->value), 
         fn (Status $typed) => route('status.show', $typed)
     );
 
@@ -78,9 +78,9 @@ it('can resolve other bindings', function () {
 
 it('checks if a crumb is current', function () {
     get(route('home'));
-
+    
     $crumb = Crumb::make('Home', 'home');
-
+    
     expect($crumb->isCurrent())->toBeTrue();
 });
 
