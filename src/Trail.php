@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Honed\Crumb;
 
+use BadMethodCallException;
+use Closure;
 use Honed\Core\Primitive;
 use Honed\Crumb\Exceptions\TrailCannotTerminateException;
 use Honed\Crumb\Support\Constants;
 use Illuminate\Support\Arr;
 use Inertia\Inertia;
+
+use function array_map;
 
 /**
  * @extends Primitive<int, array<string, mixed>>
@@ -18,7 +22,7 @@ class Trail extends Primitive
     /**
      * List of the crumbs.
      *
-     * @var list<\Honed\Crumb\Crumb>
+     * @var list<Crumb>
      */
     protected $crumbs = [];
 
@@ -39,7 +43,7 @@ class Trail extends Primitive
     /**
      * Make a new trail instance.
      *
-     * @param  \Honed\Crumb\Crumb|iterable<int,\Honed\Crumb\Crumb>  ...$crumbs
+     * @param  Crumb|iterable<int,Crumb>  ...$crumbs
      * @return static
      */
     public static function make(...$crumbs)
@@ -51,7 +55,7 @@ class Trail extends Primitive
     /**
      * Merge a set of crumbs with existing.
      *
-     * @param  \Honed\Crumb\Crumb|iterable<int,\Honed\Crumb\Crumb>  ...$crumbs
+     * @param  Crumb|iterable<int,Crumb>  ...$crumbs
      * @return $this
      */
     public function crumbs(...$crumbs)
@@ -67,8 +71,8 @@ class Trail extends Primitive
     /**
      * Append crumbs to the end of the crumb trail.
      *
-     * @param  \Honed\Crumb\Crumb|\Closure|string  $crumb
-     * @param  \Closure|string|null  $link
+     * @param  Crumb|Closure|string  $crumb
+     * @param  Closure|string|null  $link
      * @param  mixed  $parameters
      * @return $this
      */
@@ -78,8 +82,8 @@ class Trail extends Primitive
             return $this;
         }
 
-        $crumb = $crumb instanceof Crumb 
-            ? $crumb 
+        $crumb = $crumb instanceof Crumb
+            ? $crumb
             : Crumb::make($crumb, $link, $parameters);
 
         $this->crumbs[] = $crumb;
@@ -92,10 +96,9 @@ class Trail extends Primitive
     /**
      * Select and add the first matching crumb to the trail.
      *
-     * @param  \Honed\Crumb\Crumb  ...$crumbs
      * @return $this
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function select(Crumb ...$crumbs): static
     {
@@ -121,22 +124,9 @@ class Trail extends Primitive
     }
 
     /**
-     * Add a single crumb to the list of crumbs.
-     *
-     * @param  \Honed\Crumb\Crumb  $crumb
-     * @return $this
-     */
-    protected function addCrumb(Crumb $crumb): static
-    {
-        $this->crumbs[] = $crumb;
-
-        return $this;
-    }
-
-    /**
      * Retrieve the crumbs
      *
-     * @return list<\Honed\Crumb\Crumb>
+     * @return list<Crumb>
      */
     public function getCrumbs(): array
     {
@@ -169,8 +159,6 @@ class Trail extends Primitive
 
     /**
      * Determine if the trail is terminating.
-     *
-     * @return bool
      */
     public function isTerminating(): bool
     {
@@ -198,13 +186,25 @@ class Trail extends Primitive
     }
 
     /**
+     * Add a single crumb to the list of crumbs.
+     *
+     * @return $this
+     */
+    protected function addCrumb(Crumb $crumb): static
+    {
+        $this->crumbs[] = $crumb;
+
+        return $this;
+    }
+
+    /**
      * Get the representation of the trail.
      *
      * @return list<array<string, mixed>>
      */
     protected function representation(): array
     {
-        return \array_map(
+        return array_map(
             static fn (Crumb $crumb) => $crumb->toArray(),
             $this->getCrumbs()
         );
