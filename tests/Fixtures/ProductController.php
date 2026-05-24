@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Honed\Crumb\Tests\Fixtures;
 
-use Honed\Crumb\Attributes\Crumb;
+use Honed\Crumb\Attributes\Trail;
 use Honed\Crumb\Concerns\HasCrumbs;
 use Honed\Crumb\Tests\Stubs\Product;
 use Illuminate\Routing\Controller;
 
-#[Crumb('products')]
+#[Trail('products')]
 class ProductController extends Controller
 {
     use HasCrumbs;
@@ -19,7 +19,7 @@ class ProductController extends Controller
         return inertia('Product/Index');
     }
 
-    #[Crumb('products')]
+    #[Trail('products')]
     public function show(Product $product)
     {
         return inertia('Product/Show', [

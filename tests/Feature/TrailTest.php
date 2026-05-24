@@ -14,7 +14,6 @@ it('makes', function () {
     $trail = Trail::make(Crumb::make('Home', 'home'));
 
     expect($trail)->toBeInstanceOf(Trail::class)
-        ->hasCrumbs()->toBeTrue()
         ->getCrumbs()->toEqual([
             Crumb::make('Home', 'home'),
         ]);
@@ -34,7 +33,6 @@ it('adds', function () {
         ->add(Crumb::make('Home', 'home'));
 
     expect($trail)->toBeInstanceOf(Trail::class)
-        ->hasCrumbs()->toBeTrue()
         ->getCrumbs()->toEqual([
             Crumb::make('Home', 'home'),
         ]);
@@ -71,14 +69,14 @@ it('selects', function () {
     expect($trail->getCrumbs())
         ->toHaveCount(2)
         ->{0}->scoped(fn ($crumb) => $crumb
-        ->isCurrent()->toBeFalse()
-        ->getLabel()->toBe('Products')
-        ->getRoute()->toBe(route('products.index'))
+            ->isCurrent()->toBeFalse()
+            ->getLabel()->toBe('Products')
+            ->getRoute()->toBe(route('products.index'))
         )
         ->{1}->scoped(fn ($crumb) => $crumb
-        ->isCurrent()->toBeTrue()
-        ->getLabel()->toBe('Show')
-        ->getRoute()->toBe(route('products.show', $product))
+            ->isCurrent()->toBeTrue()
+            ->getLabel()->toBe('Show')
+            ->getRoute()->toBe(route('products.show', $product))
         );
 });
 
